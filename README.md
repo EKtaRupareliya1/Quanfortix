@@ -54,13 +54,13 @@ This system:
 ## Results
 
 ### Entanglement entropy
-![Entropy](results/entropy_plot.png)
+![Entropy](Results/Entaglement_Entropy.png)
 
 ### Correlation decay
-![Correlation](results/correlation_plot.png)
+![Correlation](Results/Correlation_decay.png)
 
 ### VQE convergence
-![VQE](results/vqe_convergence.png)
+![VQE](Results/VHE_convergence.png)
 
 Increasing circuit depth systematically improves energy estimates toward the exact solution.
 

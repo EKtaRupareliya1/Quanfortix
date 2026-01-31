@@ -187,7 +187,28 @@ def run_vqe(reps):
 
     result = minimize(energy, initial, method="COBYLA", options={"maxiter": 800})
     return result.fun
+
+depths = [1, 2, 3, 4, 5, 6]
+energies = []
+
+print("\nRunning depth study...\n")
+
+for d in depths:
+    E = run_vqe(d)
+    energies.append(E)
+    print(f"reps={d}  →  {E}")
+
+plt.figure()
+plt.plot(depths, energies, marker="o", label="VQE energy")
+plt.axhline(exact_energy, linestyle="--", label="Exact energy")
+
+plt.xlabel("Circuit depth (reps)")
+plt.ylabel("Ground-state energy")
+plt.title("VQE convergence with circuit depth")
+plt.legend()
+plt.show()
 ```
+
 
 
 

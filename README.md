@@ -72,9 +72,9 @@ Increasing circuit depth systematically improves energy estimates toward the exa
 pip install --upgrade pip
 
 ```bash
-pip install -r requirements.txt
+>pip install numpy matplotlib qutip qiskit qiskit-nature qiskit-aer
 
 
 
-pip install numpy matplotlib qutip qiskit qiskit-nature qiskit-aer
+
 

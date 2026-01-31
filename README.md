@@ -68,11 +68,47 @@ Increasing circuit depth systematically improves energy estimates toward the exa
 
 ## Installation
 
-```bash
-pip install --upgrade pip
+## Exact Diagonalization and Entanglement Analysis (QuTiP)
 
-```bash
->pip install numpy matplotlib qutip qiskit qiskit-nature qiskit-aer
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from qutip import *
+
+N = 6
+t = 1.0
+
+def destroy_i(i):
+    ops = []
+    for j in range(N):
+        if j == i:
+            ops.append(destroy(2))
+        else:
+            ops.append(qeye(2))
+    return tensor(ops)
+
+H = 0
+for i in range(N-1):
+    c_i = destroy_i(i)
+    c_j = destroy_i(i+1)
+    H += -t * (c_i.dag()*c_j + c_j.dag()*c_i)
+
+energies, states = H.eigenstates()
+print("Ground state energy:", energies[0])
+
+psi0 = states[0]
+
+entropies = []
+for cut in range(1, N):
+    rho = psi0.ptrace(list(range(cut)))
+    entropies.append(entropy_vn(rho))
+
+plt.plot(range(1, N), entropies, marker='o')
+plt.xlabel("Subsystem size")
+plt.ylabel("Entanglement entropy")
+plt.title("Area-law entanglement")
+plt.show()
+```
 
 
 

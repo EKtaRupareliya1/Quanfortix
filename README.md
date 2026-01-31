@@ -66,7 +66,6 @@ Increasing circuit depth systematically improves energy estimates toward the exa
 
 ---
 
-## Installation
 
 ## Exact Diagonalization and Entanglement Analysis (QuTiP)
 
@@ -110,7 +109,85 @@ plt.title("Area-law entanglement")
 plt.show()
 ```
 
+## Fermion → Qubit Mapping (Jordan–Wigner Transformation)
 
+The fermionic tight-binding Hamiltonian is mapped to qubit Pauli operators using Qiskit Nature’s Jordan–Wigner transformation, enabling simulation on quantum hardware.
+
+```python
+from qiskit_nature.second_q.operators import FermionicOp
+from qiskit_nature.second_q.mappers import JordanWignerMapper
+
+N = 4
+t = 1.0
+
+# Build tight-binding fermionic Hamiltonian
+terms = {}
+
+for i in range(N-1):
+    terms[f"+_{i} -_{i+1}"] = -t
+    terms[f"+_{i+1} -_{i}"] = -t
+
+fermion_op = FermionicOp(terms, num_spin_orbitals=N)
+
+print("\nFermionic Hamiltonian:\n")
+print(fermion_op)
+
+# Jordan–Wigner mapping
+mapper = JordanWignerMapper()
+qubit_op = mapper.map(fermion_op)
+
+print("\nMapped Qubit Hamiltonian (Pauli strings):\n")
+print(qubit_op)
+```
+
+## VQE Depth Convergence Study
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
+from qiskit_aer import Aer
+from qiskit import transpile
+from qiskit.circuit.library import TwoLocal
+from qiskit.quantum_info import SparsePauliOp
+
+from qiskit_nature.second_q.operators import FermionicOp
+from qiskit_nature.second_q.mappers import JordanWignerMapper
+
+N = 4
+t = 1.0
+
+terms = {}
+for i in range(N-1):
+    terms[f"+_{i} -_{i+1}"] = -t
+    terms[f"+_{i+1} -_{i}"] = -t
+
+fermion_op = FermionicOp(terms, num_spin_orbitals=N)
+mapper = JordanWignerMapper()
+
+qubit_op = mapper.map(fermion_op)
+qubit_op = SparsePauliOp.from_list(qubit_op.to_list())
+
+matrix = qubit_op.to_matrix()
+exact_energy = np.min(np.linalg.eigvalsh(matrix))
+
+backend = Aer.get_backend("statevector_simulator")
+
+def run_vqe(reps):
+    ansatz = TwoLocal(N, "ry", "cz", reps=reps)
+
+    def energy(params):
+        circ = ansatz.assign_parameters(params)
+        circ = transpile(circ, backend)
+        state = backend.run(circ).result().get_statevector()
+        return np.real(state.expectation_value(qubit_op))
+
+    initial = np.random.random(ansatz.num_parameters)
+
+    result = minimize(energy, initial, method="COBYLA", options={"maxiter": 800})
+    return result.fun
+```
 
 
 

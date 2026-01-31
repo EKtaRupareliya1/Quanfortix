@@ -57,7 +57,7 @@ This system:
 ![Entropy](Results/Entaglement_Entropy.png)
 
 ### Correlation decay
-![Correlation](Results/Correlation_Decay.png)
+![Correlation](Results/C_D.png)
 
 ### VQE convergence
 ![VQE](Results/VHE_convergence.png)
@@ -72,5 +72,9 @@ Increasing circuit depth systematically improves energy estimates toward the exa
 pip install --upgrade pip
 
 ```bash
+pip install -r requirements.txt
+
+
+
 pip install numpy matplotlib qutip qiskit qiskit-nature qiskit-aer
 
